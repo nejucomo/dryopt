@@ -8,7 +8,7 @@ sys.path.append(
         'src'))
 
 import unittest
-from dryopt import dryopt, opt,
+from dryopt import dryopt, opt
 from dryopt.errors import MissingOption, BadOptionType
 
 
