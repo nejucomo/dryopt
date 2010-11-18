@@ -8,13 +8,13 @@ sys.path.append(
         'src'))
 
 import unittest
-from dryopt import dryopt, opt
+from dryopt import Command, Option
 from dryopt.errors import MissingOption, BadOptionType
 
 
 class TestBase (unittest.TestCase):
     def setUp(self):
-        self.f = dryopt(self.makeTarget())
+        self.f = Command(self.makeTarget())
 
     def assertCallRaises(self, ExcClass, f, *args, **kw):
         try:
@@ -29,7 +29,7 @@ class TestBase (unittest.TestCase):
 
 class MinimalOptTests (TestBase):
     def makeTarget(self):
-        def f(arg = opt(0)):
+        def f(arg = Option(0)):
             return arg
         return f
 
@@ -54,7 +54,7 @@ class MinimalOptTests (TestBase):
 
 class NoDefaultOptTests (TestBase):
     def makeTarget(self):
-        def f(arg = opt(type=int)):
+        def f(arg = Option(type=int)):
             return arg
         return f
 
@@ -70,6 +70,24 @@ class NoDefaultOptTests (TestBase):
     def test_cmdcall_opt(self):
         self.assertEqual(7, self.f.commandline_call(['--arg', '7']))
 
+
+class NoDefaultOptTests (TestBase):
+    def makeTarget(self):
+        def f(posarg):
+            posarg
+        return f
+
+    def test_pycall_no_args(self):
+        self.assertCallRaises(MissingOption, self.f)
+
+    def test_pycall_posarg(self):
+        self.assertEqual(3, self.f(3))
+
+    def test_cmdcall_no_args(self):
+        self.assertCallRaises(SystemExit, self.f.commandline_call, [])
+
+    def test_cmdcall_posarg(self):
+        self.assertEqual(7, self.f.commandline_call(['7']))
 
 
 if __name__ == '__main__':
