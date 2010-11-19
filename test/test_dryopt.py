@@ -9,7 +9,7 @@ sys.path.append(
 
 import unittest
 from dryopt import Command, Option
-from dryopt.errors import MissingOption, BadOptionType
+from dryopt.errors import BadOptionType
 
 
 class TestBase (unittest.TestCase):
@@ -59,7 +59,7 @@ class NoDefaultOptTests (TestBase):
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(MissingOption, self.f)
+        self.assertCallRaises(TypeError, self.f)
 
     def test_pycall_kwarg(self):
         self.assertEqual(3, self.f(arg=3))
@@ -74,11 +74,11 @@ class NoDefaultOptTests (TestBase):
 class NoDefaultOptTests (TestBase):
     def makeTarget(self):
         def f(posarg):
-            posarg
+            return posarg
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(MissingOption, self.f)
+        self.assertCallRaises(TypeError, self.f)
 
     def test_pycall_posarg(self):
         self.assertEqual(3, self.f(3))
