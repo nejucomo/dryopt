@@ -37,10 +37,12 @@ class MinimalOptTests (TestBase):
         self.assertEqual(0, self.f())
 
     def test_pycall_kwarg(self):
-        self.assertEqual(3, self.f(arg=3))
+        for v in [3, 'banana']:
+            self.assertEqual(v, self.f(arg=v))
 
-    def test_pycall_type_error(self):
-        self.assertCallRaises(BadOptionType, self.f, 'banana')
+    def test_pycall_posarg(self):
+        for v in [3, 'banana']:
+            self.assertEqual(v, self.f(v))
 
     def test_cmdcall_no_args(self):
         self.assertEqual(0, self.f.commandline_call([]))
