@@ -1,6 +1,5 @@
 from dryopt.argdesc import ArgumentDescriptors
 from dryopt.option import Option
-from dryopt.debug import debug
 
 
 class Command (object):
@@ -21,13 +20,11 @@ class Command (object):
         '''
         Emulate python call.
         '''
-        debug('%s%r %r...', self.name, a, kw)
         kwargs = {}
 
         # Positional non-vargs:
         for (name, value) in zip(self.descriptors.names, a):
             kwargs[name] = value
-        debug('posargs: %r', kwargs)
 
         # Key word vargs:
         for (name, value) in kw.items():
@@ -36,7 +33,6 @@ class Command (object):
                     '%s() got multiple values for keyword argument %r' % (
                         self.name, name))
             kwargs[name] = value
-        debug('all supplied args: %r', kwargs)
 
         # Defaults:
         for (name, opt) in self.descriptors.optmap.items():
@@ -44,10 +40,8 @@ class Command (object):
                 d = opt.default
                 if d is not Option.NoDefault:
                     kwargs[name] = d
-        debug('args after defaults: %r', kwargs)
 
         vargs = a[len(self.descriptors.names):]
-        debug('vargs: %r', vargs)
 
         argsgiven = len(kwargs)
         argsneeded = len(self.descriptors.names)
