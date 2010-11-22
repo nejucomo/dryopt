@@ -23,7 +23,7 @@ class TestBase (unittest.TestCase):
     def assertCallRaises(self, ExcClass, f, *args, **kw):
         try:
             x = f(*args, **kw)
-        except Exception, e:
+        except BaseException, e:
             if isinstance(e, ExcClass):
                 return # pass.  We saw the expected exception.
             else:
