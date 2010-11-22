@@ -9,7 +9,6 @@ sys.path.append(
 
 import unittest
 from dryopt import Command, Option
-from dryopt.errors import BadOptionType
 
 
 class TestBase (unittest.TestCase):
