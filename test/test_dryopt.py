@@ -12,6 +12,10 @@ from dryopt import Command, Option
 
 
 class TestBase (unittest.TestCase):
+    def __str__(self):
+        c = self.__class__
+        return '%s.%s.%s' % (c.__module__, c.__name__, self._testMethodName)
+
     def setUp(self):
         self.f = Command(self.makeTarget())
 
