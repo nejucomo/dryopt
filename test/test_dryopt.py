@@ -95,6 +95,21 @@ class OnlyPosArgTests (TestBase):
         self.assertEqual(7, self.f.commandline_call(['7']))
 
 
+class OnlyVarArgsTests (TestBase):
+    def makeTarget(self):
+        def f(*a):
+            return a
+        return f
+
+    def test_pycall(self):
+        for args in [(), (1,), ('apple', 'banana')]:
+            self.assertEqual(args, self.f(*args))
+
+    def test_cmdcall(self):
+        for args in [[], ['7'], ['apple', 'banana']]:
+            self.assertEqual(args, self.f.commandline_call(args))
+
+
 if __name__ == '__main__':
     unittest.main()
 
