@@ -92,7 +92,7 @@ class OnlyPosArgTests (TestBase):
         self.assertCallRaises(SystemExit, self.f.commandline_call, [])
 
     def test_cmdcall_posarg(self):
-        self.assertEqual(7, self.f.commandline_call(['7']))
+        self.assertEqual('7', self.f.commandline_call(['7']))
 
 
 class OnlyVarArgsTests (TestBase):
