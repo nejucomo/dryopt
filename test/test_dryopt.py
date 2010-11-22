@@ -55,7 +55,7 @@ class MinimalOptTests (TestBase):
 
 class NoDefaultOptTests (TestBase):
     def makeTarget(self):
-        def f(arg = Option(type=int)):
+        def f(arg = Option(parse=int)):
             return arg
         return f
 

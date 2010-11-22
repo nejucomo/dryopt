@@ -1,11 +1,13 @@
 class Option (object):
+    __slots__ = ['default', 'parse', 'help']
+
     NoDefault = object() # immutable sentinel
 
-    def __init__(self, default=NoDefault, kind=None, help=None):
+    def __init__(self, default=NoDefault, parse=None, help=None):
         self.default = default
-        if kind is None:
-            assert default is not self.NoDefault, 'Either default or kind must be supplied.'
-            kind = type(default)
-        self.kind = kind
+        if parse is None:
+            assert default is not self.NoDefault, 'Either default or parse must be supplied.'
+            parse = type(default)
+        self.parse = parse
         self.help = help
         
