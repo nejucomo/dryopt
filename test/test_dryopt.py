@@ -9,6 +9,7 @@ sys.path.append(
 
 import unittest
 from dryopt import Command, Option
+from dryopt import usage
 
 
 class TestBase (unittest.TestCase):
@@ -64,7 +65,7 @@ class NoDefaultOptTests (TestBase):
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(TypeError, self.f)
+        self.assertCallRaises(usage.TooFewArgs, self.f)
 
     def test_pycall_kwarg(self):
         self.assertEqual(3, self.f(arg=3))
@@ -83,7 +84,7 @@ class OnlyPosArgTests (TestBase):
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(TypeError, self.f)
+        self.assertCallRaises(usage.TooFewArgs, self.f)
 
     def test_pycall_posarg(self):
         self.assertEqual(3, self.f(3))
