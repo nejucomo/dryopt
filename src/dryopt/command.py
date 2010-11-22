@@ -1,3 +1,4 @@
+import sys
 from dryopt.argdesc import ArgumentDescriptors
 from dryopt.option import Option
 
@@ -57,3 +58,8 @@ class Command (object):
                         self.name, argsneeded, plural, argsgiven))
 
         return self.target(*vargs, **kwargs)
+
+    def commandline_call(self, args = sys.argv[1:]):
+        vargs, kwargs = self.descriptors.parse_commandline(args)
+        return self(*vargs, **kwargs)
+
