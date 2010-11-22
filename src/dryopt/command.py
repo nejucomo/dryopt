@@ -1,6 +1,7 @@
 import sys
 from dryopt.argdesc import ArgumentDescriptors
 from dryopt.option import Option
+from dryopt.usage import UsageError, DuplicateArg, TooFewArgs
 
 
 class Command (object):
@@ -17,6 +18,10 @@ class Command (object):
     def name(self):
         return self.target.__name__
 
+    @property
+    def usage(self):
+        return '<[Usage not implemented.]>'
+
     def __call__(self, *a, **kw):
         '''
         Emulate python call.
@@ -30,9 +35,7 @@ class Command (object):
         # Key word vargs:
         for (name, value) in kw.items():
             if kwargs.has_key(name):
-                raise TypeError(
-                    '%s() got multiple values for keyword argument %r' % (
-                        self.name, name))
+                raise DuplicateArg(name, kwargs[name], value)
             kwargs[name] = value
 
         # Defaults:
@@ -47,19 +50,14 @@ class Command (object):
         argsgiven = len(kwargs)
         argsneeded = len(self.descriptors.names)
         if argsgiven < argsneeded:
-            plural = (argsneeded > 1) and 's' or ''
-            if self.descriptors.varg is None:
-                raise TypeError(
-                    '%s() takes exactly %d argument%s (%d given)' % (
-                        self.name, argsneeded, plural, argsgiven))
-            else:
-                raise TypeError(
-                    '%s() takes at least %d argument%s (%d given)' % (
-                        self.name, argsneeded, plural, argsgiven))
+            raise TooFewArgs(self.descriptors.names[argsgiven:])
 
         return self.target(*vargs, **kwargs)
 
     def commandline_call(self, args = sys.argv[1:]):
-        vargs, kwargs = self.descriptors.parse_commandline(args)
-        return self(*vargs, **kwargs)
+        try:
+            args, kwargs = self.descriptors.parse_commandline(args)
+            return self(*args, **kwargs)
+        except UsageError, e:
+            raise SystemExit('%s\n\n%s' % (e, self.usage))
 

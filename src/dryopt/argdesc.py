@@ -1,6 +1,7 @@
 import getopt
 from dryopt.inspection import inspect_appfunc
 from dryopt.option import Option
+from dryopt.usage import InvalidValue
 
 
 class ArgumentDescriptors (object):
@@ -47,7 +48,10 @@ class ArgumentDescriptors (object):
                 assert vstr == '', `vstr` # getopt + self._getopt_spec postcondition.
                 v = True
             else:
-                v = opt.parse(vstr)
+                try:
+                    v = opt.parse(vstr)
+                except Exception, e:
+                    raise InvalidValue(name, vstr, str(e))
             assert not isinstance(v, Option), `optname, name, vstr, v`
             kwargs[name] = v
 
