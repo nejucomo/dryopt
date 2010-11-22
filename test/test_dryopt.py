@@ -96,17 +96,20 @@ class OnlyPosArgTests (TestBase):
 
 
 class OnlyVarArgsTests (TestBase):
+    Vectors = [(), (1,), ('apple', 'banana')]
+
     def makeTarget(self):
         def f(*a):
             return a
         return f
 
     def test_pycall(self):
-        for args in [(), (1,), ('apple', 'banana')]:
+        for args in self.Vectors:
             self.assertEqual(args, self.f(*args))
 
     def test_cmdcall(self):
-        for args in [[], ['7'], ['apple', 'banana']]:
+        for args in self.Vectors:
+            args = tuple(map(str, args))
             self.assertEqual(args, self.f.commandline_call(args))
 
 
