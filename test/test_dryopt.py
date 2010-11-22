@@ -72,7 +72,7 @@ class NoDefaultOptTests (TestBase):
         self.assertEqual(7, self.f.commandline_call(['--arg', '7']))
 
 
-class NoDefaultOptTests (TestBase):
+class OnlyPosArgTests (TestBase):
     def makeTarget(self):
         def f(posarg):
             return posarg
