@@ -41,12 +41,10 @@ class MinimalOptTests (TestBase):
         self.assertEqual(0, self.f())
 
     def test_pycall_kwarg(self):
-        for v in [3, 'banana']:
-            self.assertEqual(v, self.f(arg=v))
+        self.assertEqual(3, self.f(arg=3))
 
     def test_pycall_posarg(self):
-        for v in [3, 'banana']:
-            self.assertEqual(v, self.f(v))
+        self.assertEqual(3, self.f(3))
 
     def test_cmdcall_no_args(self):
         self.assertEqual(0, self.f.commandline_call([]))
@@ -76,10 +74,63 @@ class NoDefaultOptTests (TestBase):
     def test_cmdcall_opt(self):
         self.assertEqual(7, self.f.commandline_call(['--arg', '7']))
 
+class ParseDefaultTests (TestBase):
+
+    def makeTarget(self):
+        def f(arg = Option(parse=int, default='1')):
+            return arg
+        return f
+    
+    def test_cmdcall_parse_default(self):
+        self.assertEqual(1, self.f.commandline_call())
+    
+    def test_cmdcall_parse_kwarg(self):
+        self.assertEqual(1, self.f.commandline_call(['--arg', '1']))
+    
+    def test_pycall_parse_default(self):
+        self.assertEqual(1, self.f())
+
+    def test_pycall_parse_kwarg(self):
+        self.assertEqual(1, self.f(arg='1'))
+
+class ParseNoDefaultTests (TestBase):
+
+    def makeTarget(self):
+        def f(arg = Option(parse=int)):
+            return arg
+        return f
+    
+    def test_cmdcall_parse_kwarg(self):
+        self.assertEqual(1, self.f.commandline_call(['--arg', '1']))
+
+    def test_cmdcall_parse_posarg(self):
+        self.assertEqual(1, self.f.commandline_call(['1']))
+    
+    def test_pycall_parse_kwarg(self):
+        self.assertEqual(1, self.f(arg='1'))
+
+    def test_pycall_parse_posarg(self):
+        self.assertEqual(1, self.f('1'))
+
+class ParseInvalidTests (TestBase):
+
+    def makeTarget(self):
+        def f(arg = Option(parse=int)):
+            return arg
+        return f
+    
+    def test_cmdcall_kwarg(self):
+        self.assertRaises(SystemExit, self.f.commandline_call, ['--arg', 'a'])
+
+    def test_pycall_kwarg(self):
+        self.assertRaises(ValueError, self.f, arg='a')
+
+    def test_pycall_posarg(self):
+        self.assertRaises(ValueError, self.f, 'a')
 
 class OnlyPosArgTests (TestBase):
     def makeTarget(self):
-        def f(posarg):
+        def f(posarg=Option(parse=int)):
             return posarg
         return f
 
@@ -93,7 +144,7 @@ class OnlyPosArgTests (TestBase):
         self.assertCallRaises(SystemExit, self.f.commandline_call, [])
 
     def test_cmdcall_posarg(self):
-        self.assertEqual('7', self.f.commandline_call(['7']))
+        self.assertEqual(7, self.f.commandline_call(['7']))
 
 
 class OnlyVarArgsTests (TestBase):

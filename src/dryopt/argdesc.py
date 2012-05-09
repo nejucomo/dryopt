@@ -38,6 +38,12 @@ class ArgumentDescriptors (object):
     def _chunks_to_kwargs(self, chunks):
         kwargs = self.defaults
 
+        chunkDict = dict( chunks )
+
+        for name, value in kwargs.items():
+            if name not in chunkDict:
+                kwargs[name] = self.optmap[name].parse(kwargs[name])
+
         for optname, vstr in chunks:
             # getopt postcondition:
             assert optname.startswith('--'), `optname, vstr`
