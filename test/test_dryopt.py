@@ -25,7 +25,7 @@ class TestBase (unittest.TestCase):
             x = f(*args, **kw)
         except BaseException, e:
             if isinstance(e, ExcClass):
-                return # pass.  We saw the expected exception.
+                return e
             else:
                 raise
         self.fail('Expected exception %r, but returned value %r.' % (ExcClass, x))
@@ -63,7 +63,8 @@ class NoDefaultOptTests (TestBase):
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(usage.TooFewArgs, self.f)
+        e = self.assertCallRaises(usage.TooFewArgs, self.f)
+        self.assertEqual( e.missing, [ 'arg' ] )
 
     def test_pycall_kwarg(self):
         self.assertEqual(3, self.f(arg=3))
@@ -92,6 +93,36 @@ class ParseDefaultTests (TestBase):
 
     def test_pycall_parse_kwarg(self):
         self.assertEqual(1, self.f(arg='1'))
+
+class ParseMultipleDefaultsTests (TestBase):
+
+    def makeTarget(self):
+        def f(
+                arg1 = Option(parse=int, default='1'),
+                arg2 = Option(parse=int, default='2'),
+                arg3 = Option(parse=int, default='3'),
+                ):
+            return arg1, arg2, arg3
+        return f
+    
+    def test_cmdcall_parse_default(self):
+        self.assertEqual( (1,2,3), self.f.commandline_call())
+    
+    def test_cmdcall_parse_1_kwarg(self):
+        self.assertEqual( (11,2,3), self.f.commandline_call(['--arg1', '11']) )
+        self.assertEqual( (1,22,3), self.f.commandline_call(['--arg2', '22']) )
+        self.assertEqual( (1,2,33), self.f.commandline_call(['--arg3', '33']) )
+
+    def test_cmdcall_parse_2_kwargs(self):
+        self.assertEqual( (11,22,3), self.f.commandline_call(['--arg1', '11', '--arg2', '22']))
+        self.assertEqual( (1,22,33), self.f.commandline_call(['--arg2', '22', '--arg3', '33']))
+        self.assertEqual( (11,2,33), self.f.commandline_call(['--arg3', '33', '--arg1', '11']))
+    
+    def test_pycall_parse_default(self):
+        self.assertEqual( (1,2,3), self.f())
+
+    def test_pycall_parse_kwarg(self):
+        self.assertEqual( (11,2,3), self.f(arg1='11'))
 
 class ParseNoDefaultTests (TestBase):
 
@@ -128,6 +159,10 @@ class ParseInvalidTests (TestBase):
     def test_pycall_posarg(self):
         self.assertRaises(ValueError, self.f, 'a')
 
+    def test_pycall_unexpected_arg(self):
+        self.assertRaises(TypeError, self.f, b=1)
+
+
 class OnlyPosArgTests (TestBase):
     def makeTarget(self):
         def f(posarg=Option(parse=int)):
@@ -135,7 +170,8 @@ class OnlyPosArgTests (TestBase):
         return f
 
     def test_pycall_no_args(self):
-        self.assertCallRaises(usage.TooFewArgs, self.f)
+        e = self.assertCallRaises(usage.TooFewArgs, self.f)
+        self.assertEqual( e.missing, [ 'posarg' ] )
 
     def test_pycall_posarg(self):
         self.assertEqual(3, self.f(3))
