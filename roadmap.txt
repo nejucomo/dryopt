@@ -1,0 +1,32 @@
+Goals for release 0.1:
+
+* Support for only Python 2.
+
+* Running "./setup.py test" will run all of these tests:
+  - pyflakes.
+  - all unittests with branch coverage analysis.
+  - all docstring examples as doctests.
+
+* Basic API with subcommands which delegates as much as possible to
+  argparse without compromising the API quality.
+
+* Full unittest branch coverage.
+
+
+
+Goals to investigate for future releases:
+
+* A single codebase that can support Python 2 and 3.
+
+* The potential for using Python 3 annotations to define options, along these lines:
+
+  >>> from dryopt import Command, Option
+  >>> @Command
+  ... def greet(name : Option(help='The name to greet.'), title : Option(help='The title.') = 'Ms.'):
+  ...     """Greet name with title."""
+  ...     print 'Hello, ' + title + ' ' + name
+  ...
+  >>> greet('Ada')
+  Hello, Ms. Ada
+
+
