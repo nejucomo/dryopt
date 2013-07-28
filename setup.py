@@ -102,16 +102,22 @@ class test_doc (Command):
 
     def run(self):
         [pkgname] = self.distribution.packages
-
         for basedir, _, files in os.walk(pkgname):
             for fname in files:
                 path = os.path.join(basedir, fname)
                 (modpart, ext) = os.path.splitext(path)
                 if ext == '.py':
                     modname = modpart.replace(os.path.sep, '.')
-                    mod = __import__(modname)
-                    print 'doctest %r' % (modname,)
+                    mod = self._import_leaf_mod(modname)
+                    print '\n=== doctests for %r ===' % (modname,)
                     doctest.testmod(mod, name=modname, report=True, verbose=False)
+
+    @staticmethod
+    def _import_leaf_mod(modname):
+        mod = __import__(modname)
+        for modpart in modname.split('.')[1:]:
+            mod = getattr(mod, modpart)
+        return mod
 
 
 
