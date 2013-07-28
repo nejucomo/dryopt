@@ -62,7 +62,9 @@ the parameter defaults to be instances of `Option`:
 
 >>> from dryopt import Command, Option
 >>> @Command
->>> def print_greeting(name = Option(default = 'Anonymous', help='The name to greet.')):
+>>> def print_greeting(
+...         name = Option(default = 'Anonymous', help='The name to greet.'),
+...         ):
 ...     """Print a greeting."""
 ...     print 'Hello, ' + name
 ...
