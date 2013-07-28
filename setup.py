@@ -4,6 +4,11 @@ import sys
 from setuptools import setup, find_packages, Command
 from setuptools.command import test
 
+try:
+    from flake8.main import Flake8Command
+except ImportError:
+    Flake8Command = None
+
 
 
 def main():
@@ -24,12 +29,12 @@ def main():
           # Runtime dependencies:
           install_requires = [],
 
-          # dev-time dependencies:
-          setup_requires = ['flake8 >= 2.0'],
-
           cmdclass = {
             # Rename the standard "test" command to "test_unit":
             'test_unit': test.test,
+
+            # Rename the standard "test" command to "test_unit":
+            'test_flake8': test_flake8,
 
             # Add our test_doc command:
             'test_doc': test_doc,
@@ -39,18 +44,40 @@ def main():
             'aliases': {
                 # Our test command runs flake8, then unittests, then doctests:
                 'test': ('setup.py', 'test_flake8 test_unit test_doc'),
-
-                # Rename the "flake8" command to "test_flake8"
-                'test_flake8': ('setup.py', 'flake8'),
                 },
             }
           )
 
 
-class test_doc (Command):
-    """A distutils command to run doctests on all modules."""
+if Flake8Command is None:
+    class test_flake8 (Command):
+        """Run flake8 tests (requires installing flake8 >= 2.0)."""
 
-    description = 'Test all docstring examples.'
+        description = __doc__
+
+        user_options = []
+
+        def __init__(self, dist):
+            raise SystemExit('You must install flake8 >= 2.0 prior to running test_flake8')
+
+else:
+    class test_flake8 (Flake8Command):
+        """Run flake8 tests (requires installing flake8 >= 2.0)."""
+
+        def run(self):
+            try:
+                Flake8Command.run(self)
+            except SystemExit, e:
+                if e.args != (0,):
+                    raise
+                # Otherwise continue running other setup commands such as tests.
+
+
+
+class test_doc (Command):
+    """Test all docstring examples."""
+
+    description = __doc__
 
     user_options = []
 
