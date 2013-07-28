@@ -30,6 +30,9 @@ def main():
           install_requires = [],
 
           cmdclass = {
+            # Make the usage string for "test" look pretty:
+            'test': AbstractTestCommandForDocs,
+
             # Rename the standard "test" command to "test_unit":
             'test_unit': test.test,
 
@@ -47,6 +50,13 @@ def main():
                 },
             }
           )
+
+
+class AbstractTestCommandForDocs (Command):
+    """This is just a shim for --help-commands output; the 'test' alias overrides it."""
+
+    description = "Run a full test framework: flake8, unittests, and doctests."
+
 
 
 if Flake8Command is None:
