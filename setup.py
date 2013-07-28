@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 
+import os
 import sys
+import doctest
 from setuptools import setup, find_packages, Command
 from setuptools.command import test
 
@@ -97,6 +99,19 @@ class test_doc (Command):
 
     def finalize_options(self):
         pass
+
+    def run(self):
+        [pkgname] = self.distribution.packages
+
+        for basedir, _, files in os.walk(pkgname):
+            for fname in files:
+                path = os.path.join(basedir, fname)
+                (modpart, ext) = os.path.splitext(path)
+                if ext == '.py':
+                    modname = modpart.replace(os.path.sep, '.')
+                    mod = __import__(modname)
+                    print 'doctest %r' % (modname,)
+                    doctest.testmod(mod, name=modname, report=True, verbose=False)
 
 
 
