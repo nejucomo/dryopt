@@ -68,7 +68,8 @@ if Flake8Command is None:
         user_options = []
 
         def __init__(self, dist):
-            raise SystemExit('You must install flake8 >= 2.0 prior to running test_flake8')
+            raise SystemExit("You must install flake8 prior to running test_flake8; run:\n\n"
+                             "  pip install 'flake8 >= 2.0'\n")
 
 else:
     class test_flake8 (Flake8Command):
