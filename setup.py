@@ -17,5 +17,17 @@ setup(name = 'dryopt',
       author = 'Nathan Wilcox',
       author_email = 'nejucomo@gmail.com',
       packages = find_packages(),
+
+      # Runtime dependencies:
       install_requires = [],
+
+      # dev-time dependencies:
+      setup_requires = ['flake8 >= 2.0'],
+
+      # Our test command runs flake8, then unittests:
+      command_options = {
+        'aliases': {
+            'test': ('setup.py', 'flake8 test'),
+            },
+        }
       )
